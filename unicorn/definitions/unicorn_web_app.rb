@@ -1,6 +1,17 @@
 define :unicorn_web_app do
   deploy = params[:deploy]
   application = params[:application]
+  template_name = "nginx_unicorn_web_app.erb" 
+
+  node[:deploy].each do |k, v|
+    app_name = k.to_s
+    if app_name == "adsyst"
+      log "this app is adsyst!"
+      template_name = "adsyst.erb"
+    else
+      log "this is not adsyst"
+    end
+  end
 
   nginx_web_app deploy[:application] do
     docroot deploy[:absolute_document_root]
@@ -11,7 +22,7 @@ define :unicorn_web_app do
     ssl_certificate_ca deploy[:ssl_certificate_ca]
     cookbook "unicorn"
     deploy deploy
-    template "nginx_unicorn_web_app.erb"
+    template template_name
     application deploy
   end
 end
